@@ -15,8 +15,8 @@ func main() {
 	router := api.Router()
 	const address = ":8080"
 
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOk := handlers.AllowedOrigins([]string{"*", "https://netnesanya.github.io"}) // Adjust the port to match your Tauri app's port
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"})
 
 	fmt.Println("Started")

@@ -9,7 +9,8 @@ import (
 func Router() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/fetch-playlist-url", HomeHandler)
+	router.HandleFunc("/ws/connect", WSHandler)
+	router.HandleFunc("/download-siq", DownloadSiqHandler)
 
 	return router
 }

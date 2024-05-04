@@ -1,47 +1,38 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
 
-func UpdateMetaDataBulkHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-}
-
-func UpdateMetaDataHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-}
-
-func PlaylistUrlHandler(w http.ResponseWriter, r *http.Request) {
+func WSHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("Upgrade error:", err)
+		log.Println(err)
 		return
 	}
 	defer conn.Close()
 
-	if r.Method != http.MethodGet {
-		http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	uid := r.URL.Query().Get("token")
+	fmt.Println("Connected to websocket with token:", uid)
 
-	//for {
-	//	_, url, err := conn.ReadMessage()
-	//	if err != nil {
-	//		log.Println("Read error:", err)
-	//		break
-	//	}
-	//
-	//	go
-	//}
+	for {
+		_, msg, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Printf("Received: %s", msg)
+	}
+}
+
+func DownloadSiqHandler(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("Authorization")
+
+	if token == "" {
+		fmt.Printf("No token found in request")
+	}
+	fmt.Printf(token)
 
 }
