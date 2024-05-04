@@ -20,7 +20,7 @@ func main() {
 	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"})
 
 	fmt.Println("Started")
-	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headersOk, originsOk, methodsOk)(router)))
+	log.Fatal(http.ListenAndServe(address, handlers.CORS(headersOk, originsOk, methodsOk)(router)))
 }
 
 func checkInstallations() {
