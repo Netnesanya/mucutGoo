@@ -49,7 +49,7 @@ func YtMetadataFromText(uid string, titles []string) {
 	}
 }
 
-func sendMetadataToWS(uid string, metadata VideoMetadata, title string) {
+func sendMetadataToWS(uid string, metadata *VideoMetadata, title string) {
 	metaJSON, err := json.Marshal(metadata)
 
 	message := ws.WSMessage{
@@ -65,7 +65,7 @@ func sendMetadataToWS(uid string, metadata VideoMetadata, title string) {
 	ws.BroadcastMessage(uid, string(messageJSON))
 }
 
-func titleToYtMetadata(title string) (VideoMetadata, error) {
+func titleToYtMetadata(title string) (*VideoMetadata, error) {
 	cmdArgs := []string{
 		"--default-search", "ytsearch1:", // Limit to the first search result
 		"--dump-json",   // Get the output in JSON format
@@ -87,7 +87,7 @@ func titleToYtMetadata(title string) (VideoMetadata, error) {
 		log.Printf("Error unmarshaling JSON for title '%s': %v", title, err)
 	}
 
-	return videoMeta, nil
+	return &videoMeta, nil
 }
 
 func cleanYtDlpOutput(input string) string {

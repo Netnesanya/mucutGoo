@@ -26,8 +26,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	//defer RemoveConnection(uid)
 	defer conn.Close()
 
-	//conn.WriteMessage(websocket.TextMessage, []byte("Connected to websocket"))
-
 	Connections[uid] = conn
 	fmt.Println("Connected to websocket with token:", uid)
 

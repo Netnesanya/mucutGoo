@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"mucutHTMX/media"
-	"mucutHTMX/ws"
 	"net/http"
 	"strings"
 )
@@ -33,7 +32,6 @@ func HandleTxt(w http.ResponseWriter, r *http.Request) {
 
 	uid := r.Header.Get("Authorization")
 	titles := strings.Split(string(body), "\n")
-	ws.BroadcastMessage(uid, uid+" is processing your request.")
 	media.YtMetadataFromText(uid, titles)
 
 	w.WriteHeader(http.StatusOK)
