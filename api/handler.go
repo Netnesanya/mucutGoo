@@ -2,7 +2,11 @@ package api
 
 import (
 	"fmt"
+	"io"
+	"mucutHTMX/media"
+	"mucutHTMX/ws"
 	"net/http"
+	"strings"
 )
 
 func DownloadSiqHandler(w http.ResponseWriter, r *http.Request) {
@@ -12,4 +16,26 @@ func DownloadSiqHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("No token found in request")
 	}
 	fmt.Printf(token)
+}
+
+func HandleTxt(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body", http.StatusInternalServerError)
+		return
+	}
+	defer r.Body.Close()
+
+	uid := r.Header.Get("Authorization")
+	titles := strings.Split(string(body), "\n")
+	ws.BroadcastMessage(uid, uid+" is processing your request.")
+	media.YtMetadataFromText(uid, titles)
+
+	w.WriteHeader(http.StatusOK)
+	return
 }
