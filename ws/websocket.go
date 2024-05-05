@@ -1,4 +1,4 @@
-package api
+package ws
 
 import (
 	"encoding/json"
@@ -13,9 +13,9 @@ type WSMessage struct {
 	Data   string `json:"data"`
 }
 
-var connections = make(map[string]*websocket.Conn)
+var Connections = make(map[string]*websocket.Conn)
 
-func WSHandler(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	uid := r.URL.Query().Get("token")
 
 	conn, err := Upgrader.Upgrade(w, r, nil)
@@ -23,10 +23,10 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	defer RemoveConnection(uid)
-	//defer conn.Close()
+	//defer RemoveConnection(uid)
+	defer conn.Close()
 
-	connections[uid] = conn
+	Connections[uid] = conn
 	fmt.Println("Connected to websocket with token:", uid)
 
 	for {
@@ -59,11 +59,17 @@ func HandleIncomingMessage(msg WSMessage, uid string) {
 }
 
 func RemoveConnection(uid string) {
-	delete(connections, uid)
+	delete(Connections, uid)
 }
 
 func BroadcastMessage(uid string, message string) {
-	if err := connections[uid].WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
+	if err := Connections[uid].WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
 		log.Printf("Error broadcasting message to a connection: %v", err)
 	}
+}
+
+var Upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true }, // Allow connections from any origin
 }

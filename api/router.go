@@ -2,21 +2,15 @@ package api
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
-	"net/http"
+	"mucutHTMX/ws"
 )
 
 func Router() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
-	router.HandleFunc("/ws/connect", WSHandler)
+	router.HandleFunc("/ws/connect", ws.Handler)
 	router.HandleFunc("/download-siq", DownloadSiqHandler)
+	router.HandleFunc("/parse-txt", HandleTxt).Methods("POST")
 
 	return router
-}
-
-var Upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true }, // Allow connections from any origin
 }
