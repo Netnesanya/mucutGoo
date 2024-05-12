@@ -2,7 +2,6 @@ package ws
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -27,7 +26,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	Connections[uid] = conn
-	fmt.Println("Connected to websocket with token:", uid)
+
+	log.Println("Connected to websocket with token:", uid)
 
 	for {
 		_, msg, err := conn.ReadMessage()
@@ -62,10 +62,13 @@ func RemoveConnection(uid string) {
 	delete(Connections, uid)
 }
 
-func BroadcastMessage(uid string, message string) {
+func BroadcastMessage(uid string, message string) error {
 	if err := Connections[uid].WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
 		log.Printf("Error broadcasting message to a connection: %v", err)
+		return err
 	}
+
+	return nil
 }
 
 var Upgrader = websocket.Upgrader{
