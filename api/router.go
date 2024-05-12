@@ -9,7 +9,7 @@ func Router() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/ws/connect", ws.Handler)
-	router.HandleFunc("/download-siq", DownloadSiqHandler)
+	router.HandleFunc("/siq", DownloadSiqHandler)
 	router.HandleFunc("/parse-txt", HandleTxt).Methods("POST")
 
 	return router

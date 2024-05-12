@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     golang-go \
-    && pip3 install yt-dlp \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container to /app
@@ -23,7 +23,8 @@ RUN go mod download
 COPY . .
 
 # Build the application; adjust the path according to your project structure
-RUN go build -o mucut ./cmd/server
+RUN go build -o mucut ./cmd
 
+EXPOSE 8080
 # Command to run the executable
 CMD ["./mucut"]
