@@ -1,20 +1,41 @@
 package api
 
 import (
-	"fmt"
+	"encoding/json"
 	"io"
+	"log"
 	"mucutHTMX/media"
 	"net/http"
 	"strings"
 )
 
 func DownloadSiqHandler(w http.ResponseWriter, r *http.Request) {
-	token := r.Header.Get("Authorization")
-
-	if token == "" {
-		fmt.Printf("No token found in request")
+	if r.Method != http.MethodPost {
+		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
+		return
 	}
-	fmt.Printf(token)
+
+	var requestData []media.CombinedData
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body", http.StatusInternalServerError)
+		return
+	}
+	defer r.Body.Close()
+
+	if err := json.Unmarshal(body, &requestData); err != nil {
+		log.Printf("Error unmarshaling request body: %v", err)
+		http.Error(w, "Error processing request body", http.StatusBadRequest)
+		return
+	}
+
+	uid := r.Header.Get("Authorization")
+
+	err = media.DownloadAudioFromList(requestData, uid)
+	if err != nil {
+		log.Printf("Download failed: %s", err)
+	}
 }
 
 func HandleTxt(w http.ResponseWriter, r *http.Request) {

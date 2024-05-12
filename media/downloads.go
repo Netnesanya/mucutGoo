@@ -13,12 +13,28 @@ func DownloadYtPlaylist(playlistUrl string) error {
 	return nil
 }
 
-func DownloadAudioSegment(url string, startTime, endTime float32, title string, uid string) error {
+func DownloadAudioFromList(data []CombinedData, uid string) error {
+
+	for _, combinedData := range data {
+		startTime, endTime := GetCutLength(combinedData)
+
+		fileName := fmt.Sprintf("%s.mp3", combinedData.VideoMetadata.Title)
+
+		err := downloadAudioSegment(combinedData.VideoMetadata.OriginalUrl, startTime, endTime, fileName, uid)
+		if err != nil {
+			log.Printf("Error downloading audio segment: %s", err)
+		}
+	}
+
+	return nil
+}
+
+func downloadAudioSegment(url string, startTime, endTime float32, fileName string, uid string) error {
 	if url == "" {
 		return fmt.Errorf("URL is empty, cannot download segment")
 	}
 
-	outputPath := filepath.Join(uid, title)
+	outputPath := filepath.Join(uid, fileName)
 
 	fmt.Println(url, startTime, endTime, outputPath)
 

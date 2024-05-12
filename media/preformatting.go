@@ -1,6 +1,34 @@
 package media
 
-func FindHeatmapSpike(heatmap []VideoHeatmap, duration float32, cutDuration *float32) (startTime, endTime float32) {
+func GetCutLength(combinedData CombinedData) (startTime, endTime float32) {
+	const defaultDuration float32 = 35
+
+	// Check if user input is provided and use it to determine start and end times
+	if combinedData.UserInput.From != 0 || combinedData.UserInput.To != 0 {
+		startTime = combinedData.UserInput.From
+		endTime = combinedData.UserInput.To
+		if combinedData.UserInput.Duration != 0 && endTime == 0 {
+			// Calculate 'to' using 'from' + 'duration' if 'to' is not provided
+			endTime = startTime + combinedData.UserInput.Duration
+		}
+	} else {
+		// Pass userSpecifiedDuration to FindHeatmapSpike, if specified; otherwise, use default duration.
+		userSpecifiedDuration := defaultDuration
+		if combinedData.UserInput.Duration != 0 {
+			userSpecifiedDuration = combinedData.UserInput.Duration
+		}
+		startTime, endTime = findHeatmapSpike(combinedData.VideoMetadata.Heatmap, combinedData.VideoMetadata.Duration, &userSpecifiedDuration)
+	}
+
+	// Ensure endTime does not exceed video duration
+	if endTime == 0 || endTime > combinedData.VideoMetadata.Duration {
+		endTime = combinedData.VideoMetadata.Duration
+	}
+
+	return startTime, endTime
+}
+
+func findHeatmapSpike(heatmap []VideoHeatmap, duration float32, cutDuration *float32) (startTime, endTime float32) {
 	if len(heatmap) == 0 {
 		startTime := (duration / 2) - *cutDuration/2
 		return startTime, startTime + *cutDuration/2 // Return immediately if heatmap is empty
