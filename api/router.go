@@ -10,7 +10,8 @@ func Router() *mux.Router {
 
 	router.HandleFunc("/ws/connect", ws.Handler)
 	router.HandleFunc("/siq", DownloadSiqHandler)
-	router.HandleFunc("/parse-txt", HandleTxt).Methods("POST")
+	router.HandleFunc("/parse-txt", TxtHandler).Methods("POST")
+	router.HandleFunc("/prep-audio", PrepAudioHandler).Methods("POST")
 
 	return router
 }

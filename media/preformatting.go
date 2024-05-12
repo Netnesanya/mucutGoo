@@ -31,7 +31,7 @@ func GetCutLength(combinedData CombinedData) (startTime, endTime float32) {
 func findHeatmapSpike(heatmap []VideoHeatmap, duration float32, cutDuration *float32) (startTime, endTime float32) {
 	if len(heatmap) == 0 {
 		startTime := (duration / 2) - *cutDuration/2
-		return startTime, startTime + *cutDuration/2 // Return immediately if heatmap is empty
+		return startTime, startTime + *cutDuration // Return immediately if heatmap is empty
 	}
 
 	var maxSpike VideoHeatmap
