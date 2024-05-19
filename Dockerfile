@@ -4,6 +4,7 @@ FROM ubuntu:latest
 # Install necessary packages including Go, FFMPEG, Python, and PIP
 RUN apt-get update && apt-get install -y \
     ffmpeg \
+    yt-dlp \
     python3 \
     python3-pip \
     golang-go \
